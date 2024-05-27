@@ -2,17 +2,35 @@
 
   <div class="grid-container">
 
-    <div class="grid-item sidebar">
+    <!-- Sidebar -->
+
+    <div class="sidebar grid-item">
 
       <AdminSideBar />
 
     </div>
 
+    
+
+    <!-- Main Content -->
+
     <div class="grid-item main-content">
 
       <div class="content">
 
-        Main Content
+        <h1 class="dashboard-heading">Dashboard</h1>
+
+        <div class="box-grid">
+
+          <div class="box" v-for="section in sections" :key="section.title">
+
+            <img :src="section.iconSrc" :alt="section.title" class="box-icon" />
+
+            <h3>{{ section.title }}</h3>
+
+          </div>
+
+        </div>
 
       </div>
 
@@ -40,6 +58,30 @@ export default {
 
   },
 
+  data() {
+
+    return {
+
+      sections: [
+
+        { title: 'List Users', iconSrc: 'https://img.icons8.com/color/96/000000/user-group-man-man.png' },
+
+        { title: 'Cluster Information', iconSrc: 'https://img.icons8.com/color/96/000000/cloud.png' },
+
+        { title: 'List Pods', iconSrc: 'https://img.icons8.com/color/96/000000/container-truck.png' },
+
+        { title: 'Resource Consumption', iconSrc: 'https://img.icons8.com/color/96/000000/graph.png' },
+
+        { title: 'Stack Information', iconSrc: 'https://img.icons8.com/color/96/000000/stack.png' },
+
+        { title: 'Pending Requests', iconSrc: 'https://img.icons8.com/color/96/000000/request-service.png' }
+
+      ]
+
+    };
+
+  }
+
 };
 
 </script>
@@ -52,11 +94,9 @@ export default {
 
   display: grid;
 
-  grid-template-columns: auto 1fr; /* Sidebar and main content side by side */
+  grid-template-columns: 250px 1fr; /* Sidebar and main content side by side */
 
-  grid-template-rows: 1fr; /* Single row */
-
-  gap: 10px;
+  gap: 0; /* No gap between sidebar and main content */
 
   height: 100vh;
 
@@ -74,27 +114,11 @@ export default {
 
 
 
-#sidebar-container a {
+.sidebar {
 
-color: white; /* Change link colors to white for better visibility */
+  background-color: #000000; /* Ensure the sidebar is completely black */
 
-display: block; /* Make the links take up the full width */
-
-padding: 10px;
-
-text-decoration: none; /* Remove underline */
-
-border-radius: 4px;
-
-transition: background-color 0.3s;
-
-}
-
-
-
-#sidebar-container a:hover {
-
-background-color: #444; /* Change background on hover to differentiate */
+  border-right: 2px solid #ffffff; /* White line separator */
 
 }
 
@@ -102,17 +126,19 @@ background-color: #444; /* Change background on hover to differentiate */
 
 .main-content {
 
-  grid-row: 1;
+  display: flex;
 
-  grid-column: 2 / span 1;
+  flex-direction: column;
 
-  display: grid;
+  justify-content: flex-start; /* Align items to the top */
 
-  grid-template-columns: 1fr;
+  align-items: center;
 
-  gap: 10px;
+  background-color: #000000;
 
-  background-color: #27496d;
+  color: #ffffff;
+
+  padding-top: 20px; /* Add padding to the top */
 
 }
 
@@ -120,45 +146,92 @@ background-color: #444; /* Change background on hover to differentiate */
 
 .content {
 
-  padding: 10px;
+  width: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+}
+
+
+
+.dashboard-heading {
+
+  font-size: 2em;
+
+  margin-bottom: 20px;
+
+  color: #ffffff;
+
+}
+
+
+
+.box-grid {
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+
+  gap: 30px; /* Increased gap between boxes */
+
+  width: 100%;
+
+  max-width: 1200px;
+
+}
+
+
+
+.box {
+
+  background-color: #2f3640;
+
+  border-radius: 10px;
+
+  padding: 40px; /* Increased padding for larger height */
 
   text-align: center;
 
-}
+  transition: transform 0.3s, box-shadow 0.3s;
 
-
-
-.button {
-
-  display: inline-block;
-
-  text-decoration: none;
-
-  color: #1a0799;
-
-  background-color: #ffffff;
-
-  border-radius: 5px;
-
-  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 
 }
 
 
 
-.button:hover {
+.box:hover {
 
-  background-color: #0056b3;
+  transform: translateY(-5px);
+
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+
+}
+
+
+
+.box-icon {
+
+  width: 64px;
+
+  height: 64px;
+
+  margin-bottom: 10px;
 
 }
 
 
 
-.footer {
+h3 {
 
-  grid-column: 1 / span 2;
+  margin: 0;
+
+  color: #ffffff;
 
 }
-
 
 </style>
