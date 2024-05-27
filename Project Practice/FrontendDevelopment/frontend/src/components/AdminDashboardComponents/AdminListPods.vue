@@ -2,15 +2,23 @@
 
   <div class="grid-container">
 
-    <AdminSideBar/>
+    <!-- Sidebar -->
 
+    <div class="sidebar grid-item">
 
+      <AdminSideBar />
+
+    </div>
+
+    
+
+    <!-- Main Content -->
 
     <div class="grid-item main-content">
 
       <div class="content">
 
-        <h1>Pods Information</h1>
+        <h1 class="dashboard-heading">Pods Information</h1>
 
         <div class="table-container">
 
@@ -48,10 +56,6 @@
 
     </div>
 
-    <br>
-    <br>
-    <br>
-
   </div>
 
 </template>
@@ -60,7 +64,7 @@
 
 <script>
 
-import AdminSideBar from "@/components/AdminDashboardComponents/AdminSideBar.vue"
+import AdminSideBar from "@/components/AdminDashboardComponents/AdminSideBar.vue";
 
 
 
@@ -150,17 +154,13 @@ export default {
 
   display: grid;
 
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 250px 1fr; /* Sidebar and main content side by side */
 
-  gap: 20px;
+  gap: 0; /* No gap between sidebar and main content */
 
   height: 100vh;
 
-  background: var(--main-bg-color);
-
-  padding: 20px;
-
-  box-sizing: border-box;
+  background: #000000;
 
 }
 
@@ -170,7 +170,15 @@ export default {
 
   padding: 20px;
 
-  overflow: hidden;
+}
+
+
+
+.sidebar {
+
+  background-color: #000000; /* Ensure the sidebar is completely black */
+
+  border-right: 2px solid #ffffff; /* White line separator */
 
 }
 
@@ -178,27 +186,19 @@ export default {
 
 .main-content {
 
-  grid-column: 2;
-
   display: flex;
 
   flex-direction: column;
 
-  gap: 20px;
+  justify-content: flex-start; /* Align items to the top */
 
-  background-color: var(--card-bg-color);
+  align-items: center;
 
-  border-radius: 15px;
+  background-color: #000000;
 
-  box-shadow: 0 10px 30px var(--card-shadow-color);
+  color: #ffffff;
 
-  padding: 20px;
-
-  height: 100%;
-
-  box-sizing: border-box;
-
-  border: 2px solid #e9e9e9; /* Enhanced border with accent color */
+  padding-top: 20px; /* Add padding to the top */
 
 }
 
@@ -206,29 +206,35 @@ export default {
 
 .content {
 
-  flex-grow: 1;
+  width: 100%;
 
-  overflow-y: auto;
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
 
 }
 
 
 
-h2 {
+.dashboard-heading {
+
+  font-size: 2em;
 
   margin-bottom: 20px;
 
-  font-size: 2.5em;
-
-  color: var(--accent-color);
-
-  text-align: center;
+  color: #ffffff;
 
 }
 
 
 
 .table-container {
+
+  width: 100%;
+
+  max-width: 1200px;
 
   overflow-x: auto;
 
