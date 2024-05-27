@@ -27,3 +27,9 @@ npm run dev
 ```sh
 npm run build
 ```
+
+### Download this library too because admintasklist is dependent on it
+
+```sh
+npm install file-saver jspdf jspdf-autotable xlsx
+```
