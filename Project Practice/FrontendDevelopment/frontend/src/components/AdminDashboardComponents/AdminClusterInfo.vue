@@ -2,11 +2,23 @@
 
   <div class="grid-container">
 
-    <AdminSideBar />
+    <!-- Sidebar -->
+
+    <div class="sidebar grid-item">
+
+      <AdminSideBar />
+
+    </div>
+
+    
+
+    <!-- Main Content -->
 
     <div class="grid-item main-content">
 
       <div class="content">
+
+        <h1 class="dashboard-heading">Cluster Health</h1>
 
         <div class="data-box">
 
@@ -172,15 +184,13 @@ export default {
 
   display: grid;
 
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 250px 1fr; /* Adjusted sidebar width */
 
-  gap: 20px;
+  gap: 0; /* No gap between sidebar and main content */
 
   height: 100vh;
 
-  background: var(--main-bg-color);
-
-  padding: 20px;
+  background: #000000;
 
 }
 
@@ -194,23 +204,31 @@ export default {
 
 
 
-.main-content {
+.sidebar {
 
-  grid-column: 2;
+  background-color: #000000; /* Ensure the sidebar is completely black */
+
+  border-right: 2px solid #ffffff; /* White line separator */
+
+}
+
+
+
+.main-content {
 
   display: flex;
 
   flex-direction: column;
 
-  gap: 30px;
+  justify-content: flex-start; /* Align items to the top */
 
-  background-color: var(--card-bg-color);
+  align-items: center;
 
-  border-radius: 15px;
+  background-color: #000000;
 
-  box-shadow: 0 4px 8px var(--card-shadow-color);
+  color: #ffffff;
 
-  border: 5px solid white; /* Added white border */
+  padding-top: 20px; /* Add padding to the top */
 
 }
 
@@ -218,11 +236,25 @@ export default {
 
 .content {
 
-  padding: 40px;
+  width: 100%;
 
-  text-align: center;
+  display: flex;
 
-  color: var(--text-color);
+  flex-direction: column;
+
+  align-items: center;
+
+}
+
+
+
+.dashboard-heading {
+
+  font-size: 2em;
+
+  margin-bottom: 20px;
+
+  color: #ffffff;
 
 }
 
@@ -234,11 +266,13 @@ export default {
 
   border-radius: 20px;
 
-  padding: 40px;
+  padding: 20px;
 
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 
   box-shadow: 0 4px 8px var(--card-shadow-color);
+
+  width: 80%; /* Adjust width to make it more centered */
 
 }
 
@@ -246,7 +280,7 @@ export default {
 
 .data-box h2 {
 
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 
   display: flex;
 
@@ -285,8 +319,6 @@ export default {
   padding: 20px;
 
   border-radius: 10px;
-
-  margin-top: 20px;
 
   background-color: #e3f2fd; /* Light blue background */
 
