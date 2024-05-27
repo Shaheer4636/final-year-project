@@ -203,7 +203,7 @@ export default {
     max-width: 400px;
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     width: 100%;
 }
 
@@ -212,7 +212,7 @@ h1 {
     text-align: center;
     font-family: sans-serif;
     font-weight: bold;
-    color: #27496D;
+    color: #ffffff;
 }
 
 .registration-form {
@@ -244,7 +244,7 @@ input[type="password"] {
     font-size: 16px;
     border: none;
     border-radius: 5px;
-    background-color: #27496D;
+    background-color: #f1f1f1;
     /* Change to your preferred background color */
     color: #fff;
     /* Change to your preferred text color */

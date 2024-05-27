@@ -1,27 +1,73 @@
 <template>
-  <body>
-    
+
+  <div id="app">
+
     <Navbar />
+
     <div>
+
       <RouterView/>
+
+      <AdminKubeeagle />
+
     </div>
-    
+
     <Footer />
-    
-  </body>
+
+  </div>
+
 </template>
 
+
+
 <script setup>
-// import Header from "./components/DefaultNavbar.vue"
-import Body from "./components/Body.vue"
-import Footer from "./components/DefaultFooter.vue"
-import Navbar from "./components/DefaultNavbar.vue"
 
+import Navbar from "./components/DefaultNavbar.vue";
 
+import Footer from "./components/DefaultFooter.vue";
 
 </script>
 
-<style>
+
+
+<script>
+
+//import AdminKubeeagle from './components/Admin-Consuption.vue';
+
+
+
+export default {
+
+  name: 'App',
+
+  components: {
+
+    // Navbar,
+
+    Footer,
+
+    //AdminKubeeagle
+
+  }
+
+};
+
+</script>
+
+
+
+<style scoped>
+
+#app {
+
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+
+  text-align: center;
+
+  /* color: #2c3e50;
+
+  margin-top: 60px; */
+
+}
 
 </style>
-

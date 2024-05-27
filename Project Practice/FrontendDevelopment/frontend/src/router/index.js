@@ -19,9 +19,19 @@ import RegistrationSuccess from "./../components/RegistrationSuccess.vue"
 import PendingUserRequest from "./../components/PendingUserRequest.vue"
 import OtpVerification from "./../components/OtpVerification.vue"
 
+// ----------------- Admin --------------------------
 import AdminLogin from "./../components/AdminLogin.vue"
 import AdminOtpVerification from "./../components/AdminOtpVerification.vue"
-import AdminDashboard from "./../components/AdminDashboard.vue"
+import AdminDashboard from "./../components/AdminDashboardComponents/AdminDashboard.vue"
+import AdminResouceConsuption from "./../components/AdminDashboardComponents/Admin-Consuption.vue"
+import AdminClusterInfo from "@/components/AdminDashboardComponents/AdminClusterInfo.vue"
+import AdminListPods from "@/components/AdminDashboardComponents/AdminListPods.vue"
+import AdminDashboardResourcesList from "@/components/AdminDashboardComponents/AdminDashboardResourcesList.vue";
+import AdminStackInformation from "@/components/AdminDashboardComponents/AdminStackInfo.vue";
+
+
+
+
 
 
 
@@ -34,6 +44,9 @@ import Aboutus from "./../components/Aboutus.vue";
 //New components imported 18-04-2024
 import UserRegistrationTesting2 from "./../components/UserRegistrationTesting2.vue";
 import OtpVerificationWithAdditionalInformation from "./../components/OtpVerificationWithAdditionalInformation.vue";
+import Userprofile from "@/components/UserDashboardComponents/Userprofile.vue";
+import Admintasklist from "@/components/UserDashboardComponents/Admintasklist.vue";
+
 
 
 const router = createRouter({
@@ -141,6 +154,17 @@ const router = createRouter({
   name:"AdminLogin",
   component: AdminLogin
 },
+{
+  path:"/userprofile",
+  name:"userprofile",
+  component: Userprofile
+},
+
+{
+  path:"/getPodsInformation",
+  name:"adminresouceslist",
+  component: AdminDashboardResourcesList
+},
 
 // New components
 {
@@ -149,13 +173,50 @@ const router = createRouter({
   component: UserRegistrationTesting2
 },
 {
+  path:"/admintasklist",
+  name:"admintasklist",
+  component: Admintasklist
+},
+{
   path: "/OtpVerificationWithAdditionalInformation",
   name: "OtpVerificationWithAdditionalInformation",
   component: OtpVerificationWithAdditionalInformation
 },
+
+
+
+///----------------Admin Dashboard Componnets
+{
+  path: "/AdminClusterInfo",
+  name: "AdminClusterInfo",
+  component: AdminClusterInfo
+},
+{
+  path: "/AdminListPods",
+  name: "AdminListPods",
+  component: AdminListPods
+},
+{
+  path: "/Admin-resource-consumption",
+  name: "adminresourceconsuption",
+  component: AdminResouceConsuption
+},
+{
+  path: "/Admin-stack-information",
+  name: "adminstackinformation",
+  component: AdminStackInformation
+}
+
+
+
+
       
 
   ],
 });
+
+
+
+
 
 export default router;

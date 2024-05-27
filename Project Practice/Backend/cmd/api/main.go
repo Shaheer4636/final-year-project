@@ -8,7 +8,6 @@ import (
 	"os"
 
 	_ "github.com/denisenkom/go-mssqldb"
-
 )
 
 // config is the type for all application configuration

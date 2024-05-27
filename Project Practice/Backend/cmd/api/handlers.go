@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 // jsonResponse is the type used for generic JSON responses
@@ -358,148 +362,154 @@ func (app *application) declineRequestHandler(w http.ResponseWriter, r *http.Req
 	w.WriteHeader(http.StatusOK)
 }
 
-// func (app *application) getPendingRequestsHandler(w http.ResponseWriter, r *http.Request) {
-// 	// Query pending user requests from the database
-// 	rows, err := app.db.Query("SELECT email, username FROM User_Registration_pending")
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	defer rows.Close()
+// //////////////////////////////////////////////////////////////////////////////////////
 
-// 	var pendingRequests []map[string]interface{}
+type ClusterInfo struct {
+	ClusterHealthy bool     `json:"clusterHealthy"`
+	Nodes          []string `json:"nodes"`
+	Pods           []Pod    `json:"pods"`
+}
 
-// 	for rows.Next() {
-// 		var email, username string
-// 		if err := rows.Scan(&email, &username); err != nil {
-// 			http.Error(w, err.Error(), http.StatusInternalServerError)
-// 			return
-// 		}
-// 		pendingRequests = append(pendingRequests, map[string]interface{}{
-// 			"email":    email,
-// 			"username": username,
-// 		})
-// 	}
+type Pod struct {
+	Name  string `json:"name"`
+	Phase string `json:"phase"`
+}
 
-// 	// Convert pendingRequests to JSON and write it to the response
-// 	w.Header().Set("Content-Type", "application/json")
-// 	if err := json.NewEncoder(w).Encode(pendingRequests); err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// }
+func (app *application) getPodsInformationHandler(w http.ResponseWriter, r *http.Request) {
+	// Call getPodsInformation and handle the result
+	clusterInfo, err := app.getPodsInformation()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error getting pod information: %v", err), http.StatusInternalServerError)
+		return
+	}
 
-// func (app *application) acceptRequestHandler(w http.ResponseWriter, r *http.Request) {
-// 	var requestData struct {
-// 		Email string `json:"email"`
-// 	}
-// 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
+	// Marshal clusterInfo to JSON and write response
+	jsonBytes, err := json.Marshal(clusterInfo)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error marshalling JSON: %v", err), http.StatusInternalServerError)
+		return
+	}
 
-// 	acceptUserQuery := `
-//         INSERT INTO User_Registration_test (Username, Email, PasswordHash)
-//         SELECT Username, Email, PasswordHash FROM User_Registration_pending WHERE Email = @Email;
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonBytes)
+}
 
-//         DELETE FROM User_Registration_pending WHERE Email = @Email;
-//     `
+func (app *application) getPodsInformation() (ClusterInfo, error) {
+	// Path to kubeconfig file on the remote machine
+	remoteKubeconfig := "kubeconfig.txt"
 
-// 	_, err := app.db.Exec(acceptUserQuery, sql.Named("Email", requestData.Email))
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
+	// Use the copied kubeconfig file
+	config, err := clientcmd.BuildConfigFromFlags("", remoteKubeconfig)
+	if err != nil {
+		return ClusterInfo{}, fmt.Errorf("error building kubeconfig: %v", err)
+	}
 
-// 	// Respond with success status
-// 	w.WriteHeader(http.StatusOK)
-// }
+	// Create a Kubernetes client
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return ClusterInfo{}, fmt.Errorf("error creating clientset: %v", err)
+	}
 
-// func (app *application) declineRequestHandler(w http.ResponseWriter, r *http.Request) {
-// 	var requestData struct {
-// 		Email string `json:"email"`
-// 	}
-// 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
+	// List all nodes
+	nodes, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return ClusterInfo{}, fmt.Errorf("error listing nodes: %v", err)
+	}
 
-// 	declineUserQuery := `
-//         DELETE FROM User_Registration_pending WHERE Email = @Email;
-//     `
+	// List all pods
+	pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return ClusterInfo{}, fmt.Errorf("error listing pods: %v", err)
+	}
 
-// 	_, err := app.db.Exec(declineUserQuery, sql.Named("Email", requestData.Email))
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
+	// Create ClusterInfo object
+	clusterInfo := ClusterInfo{
+		ClusterHealthy: true, // Assume cluster is healthy for now
+		Nodes:          make([]string, len(nodes.Items)),
+		Pods:           make([]Pod, len(pods.Items)),
+	}
 
-// 	// Respond with success status
-// 	w.WriteHeader(http.StatusOK)
-// }
+	// Populate node names
+	for i, node := range nodes.Items {
+		clusterInfo.Nodes[i] = node.GetName()
+	}
 
-// func (app *application) authenticateUser(email string) (string, error) {
-// 	var storedPassword string
+	// Populate pod info
+	for i, pod := range pods.Items {
+		clusterInfo.Pods[i] = Pod{
+			Name:  pod.GetName(),
+			Phase: string(pod.Status.Phase),
+		}
+	}
 
-// 	// Log the username before querying the database
-// 	app.infoLog.Printf("Authenticating user: %s", email)
+	return clusterInfo, nil
+}
 
-// 	// err := app.db.QueryRow("SELECT Password FROM UserLogin2 WHERE Username = @username", sql.Named("username", username)).Scan(&storedPassword)
-// 	err := app.db.QueryRow("SELECT Password FROM UserLogin WHERE Email = @email", sql.Named("email", email)).Scan(&storedPassword)
-// 	return storedPassword, err
-// }
+func (app *application) getClusterHealthHandler(w http.ResponseWriter, r *http.Request) {
+	clusterInfo, err := app.getPodsInformation()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error getting pod information: %v", err), http.StatusInternalServerError)
+		return
+	}
 
-// func (app *application) loginAPI(w http.ResponseWriter, r *http.Request) {
-// 	type credentials struct {
-// 		// UserName string `json:"username"`
-// 		Email    string `json:"email`
-// 		Password string `json:"password"`
-// 	}
+	response := struct {
+		ClusterHealthy bool `json:"clusterHealthy"`
+	}{
+		ClusterHealthy: clusterInfo.ClusterHealthy,
+	}
 
-// 	var creds credentials
-// 	var payload jsonResponse
+	jsonBytes, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error marshalling JSON: %v", err), http.StatusInternalServerError)
+		return
+	}
 
-// 	err := app.readJSON(w, r, &creds)
-// 	if err != nil {
-// 		app.errorLog.Println(err)
-// 		payload.Error = true
-// 		payload.Message = "invalid json supplied, or json missing entirely"
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonBytes)
+}
 
-// 		_ = app.writeJSON(w, http.StatusBadRequest, payload)
-// 		return
-// 	}
+func (app *application) getNodesHandler(w http.ResponseWriter, r *http.Request) {
+	clusterInfo, err := app.getPodsInformation()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error getting pod information: %v", err), http.StatusInternalServerError)
+		return
+	}
 
-// 	// Log the received credentials
-// 	app.infoLog.Printf("Received login request. Username: %s, Password: %s", creds.Email, creds.Password)
+	response := struct {
+		Nodes []string `json:"nodes"`
+	}{
+		Nodes: clusterInfo.Nodes,
+	}
 
-// 	// Authenticate with the database
-// 	storedPassword, err := app.authenticateUser(creds.Email)
-// 	if err != nil {
-// 		app.errorLog.Println(err)
-// 		payload.Error = true
-// 		payload.Message = "User not found"
+	jsonBytes, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error marshalling JSON: %v", err), http.StatusInternalServerError)
+		return
+	}
 
-// 		_ = app.writeJSON(w, http.StatusUnauthorized, payload)
-// 		return
-// 	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonBytes)
+}
 
-// 	// Compare the provided password with the stored password
-// 	if creds.Password == storedPassword {
-// 		// Log a message indicating successful login
-// 		app.infoLog.Printf("User %s logged in successfully", creds.Email)
+func (app *application) getPodsHandler(w http.ResponseWriter, r *http.Request) {
+	clusterInfo, err := app.getPodsInformation()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error getting pod information: %v", err), http.StatusInternalServerError)
+		return
+	}
 
-// 		// send back a response
-// 		payload.Error = false
-// 		payload.Message = "Signed in"
+	response := struct {
+		Pods []Pod `json:"pods"`
+	}{
+		Pods: clusterInfo.Pods,
+	}
 
-// 		err := app.writeJSON(w, http.StatusOK, payload)
-// 		if err != nil {
-// 			app.errorLog.Println(err)
-// 		}
-// 	} else {
-// 		payload.Error = true
-// 		payload.Message = "Login failed"
+	jsonBytes, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error marshalling JSON: %v", err), http.StatusInternalServerError)
+		return
+	}
 
-//			_ = app.writeJSON(w, http.StatusUnauthorized, payload)
-//		}
-//	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonBytes)
+}

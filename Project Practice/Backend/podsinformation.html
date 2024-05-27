@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes Pods Information Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow-x: auto; /* Apply horizontal scrollbar if needed */
+            overflow-y: hidden; /* Hide vertical scrollbar */
+        }
+        .dashboard {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+        }
+        .column {
+            margin-right: 20px; /* Margin between columns */
+            flex-shrink: 0; /* Prevent columns from shrinking */
+            overflow-y: auto; /* Apply vertical scrollbar if needed */
+            max-height: calc(100vh - 40px); /* Adjusted height */
+            width: 300px; /* Fixed width for columns */
+        }
+        .record {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 100%;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .pod-number {
+            background-color: #ffcc00;
+        }
+        .pod-name {
+            background-color: #66ccff;
+        }
+        .pod-status {
+            background-color: #99ff99;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard">
+            <div class="column">
+                <h2>Pod Number</h2>
+                <div id="podNumber" class="pod-column"></div>
+            </div>
+            <div class="column">
+                <h2>Pod Name</h2>
+                <div id="podName" class="pod-column"></div>
+            </div>
+            <div class="column">
+                <h2>Pod Status</h2>
+                <div id="podStatus" class="pod-column"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        fetch('http://localhost:8080')
+            .then(response => response.json())
+            .then(data => {
+                const podNumber = document.getElementById('podNumber');
+                const podName = document.getElementById('podName');
+                const podStatus = document.getElementById('podStatus');
+                
+                data.forEach(pod => {
+                    const podNumberElement = document.createElement('div');
+                    podNumberElement.classList.add('record', 'pod-number');
+                    podNumberElement.textContent = data.indexOf(pod) + 1;
+                    podNumber.appendChild(podNumberElement);
+                    
+                    const podNameElement = document.createElement('div');
+                    podNameElement.classList.add('record', 'pod-name');
+                    podNameElement.textContent = pod.Name;
+                    podName.appendChild(podNameElement);
+                    
+                    const podStatusElement = document.createElement('div');
+                    podStatusElement.classList.add('record', 'pod-status');
+                    podStatusElement.textContent = pod.Status;
+                    podStatus.appendChild(podStatusElement);
+                });
+            })
+            .catch(error => console.error('Error fetching pods:', error));
+    </script>
+</body>
+</html>

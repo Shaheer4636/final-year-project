@@ -66,5 +66,18 @@ func (app *application) routes() http.Handler {
 	mux.Get("/api/getUserInfo", app.getUserInfoHandler)
 	mux.Post("/api/getUserInfo", app.getUserInfoHandler)
 
+	///---------------------PODs Data---------------------
+	mux.Get("/api/getPodsInformation", app.getPodsInformationHandler)
+	mux.Post("/api/getPodsInformation", app.getPodsInformationHandler)
+
+	mux.Get("/api/getClusterHealthHandler", app.getClusterHealthHandler)
+	mux.Post("/api/getClusterHealthHandler", app.getClusterHealthHandler)
+
+	mux.Get("/api/getNodesHandler", app.getNodesHandler)
+	mux.Post("/api/getNodesHandler", app.getNodesHandler)
+
+	mux.Get("/api/getPodsHandler", app.getPodsHandler)
+	mux.Post("/api/getPodsHandler", app.getPodsHandler)
+
 	return mux
 }

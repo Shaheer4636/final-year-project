@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div class="navbar">
       <ul class="left-links">
         <li><router-link to="/home">Home</router-link></li>
@@ -128,4 +128,4 @@
   top: 2px; /* Adjust vertical position if needed */
 }
   
-</style>
+</style> -->
