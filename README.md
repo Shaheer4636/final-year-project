@@ -33,3 +33,9 @@ npm run build
 ```sh
 npm install file-saver jspdf jspdf-autotable xlsx
 ```
+
+### Download Js cookie 
+
+```sh
+npm install js-cookie
+```
